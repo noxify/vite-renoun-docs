@@ -1,0 +1,171 @@
+import type { z } from "zod"
+import { Collection, isDirectory, isFile } from "renoun/file-system"
+
+import type { metadataSchema } from "./validations"
+import { removeFromArray } from "./lib/utils"
+import { generateDirectories } from "./sources"
+
+export const DocumentationGroup = new Collection({
+  entries: [...generateDirectories()],
+})
+
+export type EntryType = Awaited<ReturnType<typeof DocumentationGroup.getEntry>>
+export type DirectoryType = Awaited<
+  ReturnType<typeof DocumentationGroup.getDirectory>
+>
+
+/**
+ * Helper function to get the title for an element in the sidebar/navigation
+ * @param collection {EntryType} the collection to get the title for
+ * @param metadata {z.infer<typeof metadataSchema>} the metadata to get the title from
+ * @param includeTitle? {boolean} whether to include the title in the returned string
+ * @returns {string} the title to be displayed in the sidebar/navigation
+ */
+export function getTitle(
+  collection: EntryType,
+  metadata: z.infer<typeof metadataSchema>,
+  includeTitle = false,
+): string {
+  return includeTitle
+    ? (metadata.navTitle ?? metadata.title ?? collection.getTitle())
+    : (metadata.navTitle ?? collection.getTitle())
+}
+
+/**
+ * Helper function to get the file content for a given source entry
+ * This function will try to get the file based on the given path and the "mdx" extension
+ * If the file is not found, it will try to get the index file based on the given path and the "mdx" extension
+ * If there is also no index file, it will return null
+ *
+ * @param source {EntryType} the source entry to get the file content for
+ */
+export const getFileContent = async (source: EntryType) => {
+  // first, try to get the file based on the given path
+
+  return await DocumentationGroup.getFile(
+    source.getPathnameSegments(),
+    "mdx",
+  ).catch(async () => {
+    return await DocumentationGroup.getFile(
+      [...source.getPathnameSegments(), "index"],
+      "mdx",
+    ).catch(() => null)
+  })
+}
+
+/**
+ * Helper function to get the sections for a given source entry
+ * This function will try to get the sections based on the given path
+ *
+ * If there there are no entries/children for the current path, it will return an empty array
+ *
+ * @param source {EntryType} the source entry to get the sections for
+ * @returns
+ */
+export async function getSections(source: EntryType) {
+  if (source.getDepth() > -1) {
+    if (isDirectory(source)) {
+      return (
+        await (
+          await DocumentationGroup.getDirectory(source.getPathnameSegments())
+        ).getEntries()
+      ).filter((ele) => ele.getPathname() !== source.getPathname())
+    }
+
+    if (isFile(source) && source.getBaseName() === "index") {
+      return await source.getParent().getEntries()
+    }
+    return []
+  } else {
+    return (
+      await (
+        await DocumentationGroup.getDirectory(source.getPathnameSegments())
+      ).getEntries()
+    ).filter((ele) => ele.getPathname() !== source.getPathname())
+  }
+}
+
+/**
+ * Helper function to get the breadcrumb items for a given slug
+ *
+ * @param slug {string[]} the slug to get the breadcrumb items for
+ */
+export const getBreadcrumbItems = async (slug: string[]) => {
+  // we do not want to have "index" as breadcrumb element
+  const cleanedSlug = removeFromArray(slug, ["index"])
+
+  const combinations = cleanedSlug.map((_, index) =>
+    cleanedSlug.slice(0, index + 1),
+  )
+
+  const items = []
+
+  for (const currentPageSegement of combinations) {
+    let collection: EntryType
+    let file: Awaited<ReturnType<typeof getFileContent>>
+    let metadata: z.infer<typeof metadataSchema> | undefined
+    try {
+      collection = await DocumentationGroup.getEntry(currentPageSegement)
+      if (collection.getPathnameSegments().includes("index")) {
+        file = await getFileContent(collection.getParent())
+      } else {
+        file = await getFileContent(collection)
+      }
+
+      metadata = await file?.getExportValue("metadata")
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e: unknown) {
+      continue
+    }
+
+    if (!metadata) {
+      items.push({
+        title: collection.getTitle(),
+        path: ["docs", ...collection.getPathnameSegments()],
+      })
+    } else {
+      const title = getTitle(collection, metadata, true)
+      items.push({
+        title,
+        path: [
+          "docs",
+          ...removeFromArray(collection.getPathnameSegments(), ["index"]),
+        ],
+      })
+    }
+  }
+
+  return items
+}
+
+/**
+ * Checks if an entry is hidden (starts with an underscore)
+ *
+ * @param entry {EntryType} the entry to check for visibility
+ */
+export function isHidden(entry: EntryType) {
+  return entry.getBaseName().startsWith("_")
+}
+
+export async function isExternal(entry: EntryType) {
+  let metadata: z.infer<typeof metadataSchema> | undefined
+  let file: Awaited<ReturnType<typeof getFileContent>>
+
+  try {
+    if (entry.getPathnameSegments().includes("index")) {
+      file = await getFileContent(entry.getParent())
+    } else {
+      file = await getFileContent(entry)
+    }
+
+    metadata = await file?.getExportValue("metadata")
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (e: unknown) {
+    return false
+  }
+
+  if (!metadata?.externalLink) {
+    return false
+  }
+  return true
+}
