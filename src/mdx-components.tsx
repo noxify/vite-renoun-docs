@@ -4,9 +4,10 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react"
 import type { CodeBlockProps, CodeInlineProps } from "renoun/components"
 import type { MDXComponents } from "renoun/mdx"
 import { DataTableBuilder } from "@/components/data-table/data-table-builder"
-import { Heading } from "@/components/heading"
-import MermaidWrapper from "@/components/mermaid-wrapper"
-import RailroadWrapper from "@/components/railroad-wrapper"
+import { Heading } from "@/components/mdx/heading"
+import MermaidWrapper from "@/components/mdx/mermaid-wrapper"
+import RailroadWrapper from "@/components/mdx/railroad-wrapper"
+import Video from "@/components/mdx/video"
 import {
   Accordion as BaseAccordion,
   AccordionContent as BaseAccordionContent,
@@ -24,7 +25,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import Video from "@/components/video"
 import {
   BookOpenTextIcon,
   CircleAlertIcon,
@@ -35,7 +35,7 @@ import { CodeBlock, CodeInline, parseCodeProps } from "renoun/components"
 import { createSlug } from "renoun/mdx"
 
 import Link from "./components/link-component"
-import { Preview } from "./components/preview"
+import { Preview } from "./components/mdx/preview"
 
 type AnchorProps = ComponentPropsWithoutRef<"a">
 

@@ -4,7 +4,7 @@ import { useState } from "react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Menu, X } from "lucide-react"
 
-import Link from "./link-component"
+import { LogoButton } from "./logo-button"
 
 interface NavItem {
   href: string
@@ -22,11 +22,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
-          <div className="text-xl font-bold">Vite Renoun Blog</div>
-        </Link>
-
+        <LogoButton size="lg" />
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-6 md:flex">
           {navItems.map((item) => (

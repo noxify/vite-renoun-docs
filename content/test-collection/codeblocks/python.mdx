@@ -5,7 +5,16 @@ export const metadata = {
 ## python
 
 ```python
-print("hello world")
+def greet(name):
+  return f"Hello, {name}!"
+
+users = [
+  {"id": 1, "name": "Alice"},
+  {"id": 2, "name": "Bob"}
+]
+
+for user in users:
+  print(greet(user["name"]))
 ```
 
 ## py

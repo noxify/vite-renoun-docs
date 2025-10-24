@@ -5,5 +5,8 @@ export const metadata = {
 ## sql
 
 ```sql
-select * from table_name
+SELECT u.id, u.name, p.title
+FROM users u
+JOIN posts p ON p.user_id = u.id
+WHERE u.active = true;
 ```

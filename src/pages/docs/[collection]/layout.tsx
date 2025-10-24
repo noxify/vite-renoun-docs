@@ -1,4 +1,4 @@
-import type { LayoutProps, PageProps } from "@/routes"
+import type { LayoutProps } from "@/routes"
 import { cache } from "react"
 import { DocumentationGroup } from "@/collections"
 import { DocsSidebar } from "@/components/docs-sidebar"

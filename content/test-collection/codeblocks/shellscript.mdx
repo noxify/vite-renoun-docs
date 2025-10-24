@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "shellscript Grammar"
+  title: "shellscript Grammar",
 }
 
 ## shellscript
@@ -28,6 +28,13 @@ VAR_NAME="value"
 
 ## zsh
 
-```zsh
-VAR_NAME="value"
+```sh
+users=("Alice" "Bob")
+for user in "${users[@]}"; do
+  if [ "$user" == "Alice" ]; then
+    echo "Hello, $user (admin)"
+  else
+    echo "Hello, $user"
+  fi
+done
 ```

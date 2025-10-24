@@ -6,5 +6,15 @@ export const metadata = {
 ## tsx
 
 ```tsx
-console.log("hello world")
+type WelcomeProps = {
+  name: string
+}
+
+function Welcome({ name }: WelcomeProps) {
+  return <h1>Hello, {name}!</h1>
+}
+
+export default function App() {
+  return <Welcome name="Alice" />
+}
 ```

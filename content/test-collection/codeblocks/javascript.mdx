@@ -1,11 +1,22 @@
 export const metadata = {
-  title: "Javascript Grammar"
+  title: "Javascript Grammar",
 }
 
 ## javascript
 
 ```javascript
-console.log("hello world")
+function greet(name) {
+  return `Hello, ${name}!`
+}
+
+const users = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" },
+]
+
+users.forEach((user) => {
+  console.log(greet(user.name))
+})
 ```
 
 ## js
