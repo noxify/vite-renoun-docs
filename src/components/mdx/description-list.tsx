@@ -18,12 +18,12 @@ export const DescriptionListItem = ({
 }) => {
   return (
     <div className={cn("px-0 py-6 lg:grid lg:grid-cols-3 lg:gap-4", className)}>
-      <dt className="text-sm leading-6 font-bold text-primary lg:mt-0">
+      <dt className="text-sm leading-6 font-bold text-foreground lg:mt-0">
         {typeof label === "function" ? label() : label}
       </dt>
       <dd
         className={cn(
-          "mt-1 text-sm leading-6 text-primary lg:col-span-2 lg:mt-0",
+          "mt-1 text-sm leading-6 text-foreground lg:col-span-2 lg:mt-0",
           ddClassName,
         )}
       >

@@ -31,3 +31,11 @@ pnpm preview    # Preview ( via `serve-handler` )
 - You should definitely check out [`vite-plugin-rsc-pages`](https://github.com/mrozio13pl/vite-plugin-rsc-pages) if you're looking for a Next.js app router-like page integration
 - The router code is inspired by the Next.js implementation and was generated with GitHub Copilot
 - This repository is based on the [SSG example from Vite](https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-rsc/examples/ssg)
+
+## UI components
+
+- shadcn/ui default components
+- https://reui.io/docs/alert
+- https://coss.com/origin/stepper
+- https://ariadocs.vercel.app/docs/getting-started/components/stepper
+- https://github.com/nisabmohd/Aria-Docs/blob/master/components/markdown/stepper.tsx

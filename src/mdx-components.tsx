@@ -1,5 +1,5 @@
-import type { alertVariants } from "@/components/ui/alert"
 import type { VariantProps } from "class-variance-authority"
+import type { LucideIcon } from "lucide-react"
 import type { ComponentPropsWithoutRef, ReactNode } from "react"
 import type { CodeBlockProps, CodeInlineProps } from "renoun/components"
 import type { MDXComponents } from "renoun/mdx"
@@ -14,7 +14,13 @@ import {
   AccordionItem as BaseAccordionItem,
   AccordionTrigger as BaseAccordionTrigger,
 } from "@/components/ui/accordion"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import {
+  Alert,
+  AlertContent,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+} from "@/components/ui/alert"
 import { Stepper, StepperItem } from "@/components/ui/stepper"
 import {
   Table,
@@ -26,15 +32,21 @@ import {
 } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
-  BookOpenTextIcon,
+  BellIcon,
   CircleAlertIcon,
-  CircleCheckBigIcon,
-  CoffeeIcon,
+  CircleCheckIcon,
+  InfoIcon,
+  ShieldAlertIcon,
 } from "lucide-react"
 import { CodeBlock, CodeInline, parseCodeProps } from "renoun/components"
 import { createSlug } from "renoun/mdx"
 
 import Link from "./components/link-component"
+import { APIReference } from "./components/mdx/api-reference"
+import {
+  DescriptionList,
+  DescriptionListItem,
+} from "./components/mdx/description-list"
 import { Preview } from "./components/mdx/preview"
 
 type AnchorProps = ComponentPropsWithoutRef<"a">
@@ -124,10 +136,6 @@ export function useMDXComponents() {
         </div>
       </section>
     ),
-    // if you decide to use `<Image />` inside your mdx, you have the possibility to overwrite
-    // the default values ( e.g. for width, height or className ) - we do this differently from the `img` tag above
-    // because we think if you use `<Image />` inside your mdx, you should have this flexibility
-    // if this is not what you want - feel free to change the code below or import the `Image` component directly
     Image: (props) => (
       <section>
         <div className="mb-4 flex items-center justify-center">
@@ -223,50 +231,8 @@ export function useMDXComponents() {
         />
       )
     },
-    Note: ({ title, children }: { title?: string; children: ReactNode }) => {
-      return (
-        <Alert variant={"note"} className="my-4">
-          <BookOpenTextIcon className="w4 h-4" />
-          {title && <AlertTitle>{title}</AlertTitle>}
-          <AlertDescription>{children}</AlertDescription>
-        </Alert>
-      )
-    },
-    Warning: ({ title, children }: { title?: string; children: ReactNode }) => {
-      return (
-        <Alert variant={"warning"} className="my-4">
-          <CircleAlertIcon className="w4 h-4" />
-          {title && <AlertTitle>{title}</AlertTitle>}
-          <AlertDescription>{children}</AlertDescription>
-        </Alert>
-      )
-    },
-    Advertising: ({
-      title,
-      children,
-    }: {
-      title?: string
-      children: ReactNode
-    }) => {
-      if (!title) title = "Werbung!"
-      else title = "Werbung: " + title
-      return (
-        <Alert variant={"advertising"} className="my-4">
-          <CoffeeIcon className="w4 h-4" />
-          {title && <AlertTitle>{title}</AlertTitle>}
-          <AlertDescription>{children}</AlertDescription>
-        </Alert>
-      )
-    },
-    Success: ({ title, children }: { title?: string; children: ReactNode }) => {
-      return (
-        <Alert variant={"success"} className="my-4">
-          <CircleCheckBigIcon color="#b5ffc9" className="w4 h-4" />
-          {title && <AlertTitle>{title}</AlertTitle>}
-          <AlertDescription>{children}</AlertDescription>
-        </Alert>
-      )
-    },
+
+    // stepper
     Stepper: ({ children }: { children: ReactNode }) => {
       return <Stepper>{children}</Stepper>
     },
@@ -279,6 +245,8 @@ export function useMDXComponents() {
     }) => {
       return <StepperItem title={title}>{children}</StepperItem>
     },
+
+    // tabs
     Tabs: ({
       defaultValue,
       children,
@@ -304,6 +272,7 @@ export function useMDXComponents() {
       children: ReactNode
     }) => <TabsContent value={value}>{children}</TabsContent>,
 
+    // table & data table
     table: ({ children }: { children?: ReactNode }) => {
       return (
         <div className="my-4">
@@ -315,26 +284,69 @@ export function useMDXComponents() {
         </div>
       )
     },
-
     thead: ({ children }: { children?: ReactNode }) => {
       return <TableHeader>{children}</TableHeader>
     },
     tbody: ({ children }: { children?: ReactNode }) => {
       return <TableBody>{children}</TableBody>
     },
-
-    th: ({ children }: { children?: ReactNode }) => {
-      return <TableHead>{children}</TableHead>
+    th: ({
+      style,
+      children,
+    }: {
+      style?: { textAlign?: React.ComponentProps<"th">["align"] }
+      children: ReactNode
+    }) => {
+      return <TableHead align={style?.textAlign}>{children}</TableHead>
     },
-
     tr: ({ children }: { children?: ReactNode }) => {
       return <TableRow>{children}</TableRow>
     },
-
-    td: ({ children }: { children?: ReactNode }) => {
-      return <TableCell className="whitespace-nowrap">{children}</TableCell>
+    td: ({
+      style,
+      children,
+    }: {
+      style?: { textAlign?: React.ComponentProps<"td">["align"] }
+      children: ReactNode
+    }) => {
+      return (
+        <TableCell
+          className="whitespace-nowrap"
+          align={style?.textAlign ?? "left"}
+        >
+          {children}
+        </TableCell>
+      )
+    },
+    Table: Table,
+    TableBody: TableBody,
+    TableCell: TableCell,
+    TableHead: TableHead,
+    TableHeader: TableHeader,
+    TableRow: TableRow,
+    TableBuilder: ({
+      columns,
+      data,
+    }: React.ComponentProps<typeof DataTableBuilder>) => {
+      return (
+        <DataTableBuilder
+          columns={columns}
+          data={data}
+          options={{ sorting: false, pagination: false }}
+        />
+      )
+    },
+    DataTableBuilder: ({
+      columns,
+      data,
+      options,
+    }: React.ComponentProps<typeof DataTableBuilder>) => {
+      return (
+        <DataTableBuilder columns={columns} data={data} options={options} />
+      )
     },
 
+    // description list
     dl: ({ children }: { children?: ReactNode }) => {
       return (
         <dl className="divide-y divide-gray-100">
@@ -344,7 +356,6 @@ export function useMDXComponents() {
         </dl>
       )
     },
-
     dt: ({ children }: { children?: ReactNode }) => {
       return (
         <dt className="text-sm leading-6 font-medium text-primary">
@@ -352,7 +363,6 @@ export function useMDXComponents() {
         </dt>
       )
     },
-
     dd: ({ children }: { children?: ReactNode }) => {
       return (
         <dd className="mt-1 text-sm leading-6 text-primary sm:col-span-2 sm:mt-0">
@@ -360,49 +370,9 @@ export function useMDXComponents() {
         </dd>
       )
     },
-
-    DescriptionList: ({ children }: { children: ReactNode }) => {
-      return (
-        <dl className="divide-y divide-accent-foreground/15">{children}</dl>
-      )
-    },
-
-    DescriptionListItem: ({
-      label,
-      children,
-    }: {
-      label: string
-      children: ReactNode
-    }) => {
-      return (
-        <div className="px-0 py-6 lg:grid lg:grid-cols-3 lg:gap-4">
-          <dt className="text-sm leading-6 font-bold text-primary lg:mt-0">
-            {label}
-          </dt>
-          <dd className="mt-1 text-sm leading-6 text-primary lg:col-span-2 lg:mt-0">
-            {children}
-          </dd>
-        </div>
-      )
-    },
-    Preview: ({ children }: { children: ReactNode }) => {
-      return <Preview>{children}</Preview>
-    },
-
-    Railroad: ({
-      content,
-      wrapped,
-    }: {
-      content: string
-      wrapped?: boolean
-    }) => {
-      return <RailroadWrapper content={content} wrapped={wrapped} />
-    },
-
-    Mermaid: ({ content, wrapped }: { content: string; wrapped?: boolean }) => {
-      return <MermaidWrapper chart={content} wrapped={wrapped} />
-    },
-
+    DescriptionList,
+    DescriptionListItem,
+    // accordion / collapible
     Accordion: ({
       children,
       collapsible,
@@ -439,54 +409,149 @@ export function useMDXComponents() {
       )
     },
 
-    TableBuilder: ({
-      columns,
-      data,
-    }: React.ComponentProps<typeof DataTableBuilder>) => {
-      return (
-        <DataTableBuilder
-          columns={columns}
-          data={data}
-          options={{ sorting: false, pagination: false }}
-        />
-      )
+    // custom components
+    Preview: ({ children }: { children: ReactNode }) => {
+      return <Preview>{children}</Preview>
     },
-
-    DataTableBuilder: ({
-      columns,
-      data,
-      options,
-    }: React.ComponentProps<typeof DataTableBuilder>) => {
-      return (
-        <DataTableBuilder columns={columns} data={data} options={options} />
-      )
+    Railroad: ({
+      content,
+      wrapped,
+    }: {
+      content: string
+      wrapped?: boolean
+    }) => {
+      return <RailroadWrapper content={content} wrapped={wrapped} />
     },
-
+    Mermaid: ({ content, wrapped }: { content: string; wrapped?: boolean }) => {
+      return <MermaidWrapper chart={content} wrapped={wrapped} />
+    },
     Video: ({ src }: { src: string }) => {
       return <Video src={src} />
     },
 
-    Callout: ({
+    // alerts
+    Alert: ({
       title,
-      variant = "default",
+      icon,
+      appearance = "light",
+      variant,
       children,
     }: {
       title?: string
-      variant: VariantProps<typeof alertVariants>["variant"]
+      variant?: VariantProps<typeof Alert>["variant"]
+      appearance?: VariantProps<typeof Alert>["appearance"]
+      icon?: "alert" | "info" | "error" | "warning" | "success" | "callout"
       children: ReactNode
     }) => {
+      let IconComponent: LucideIcon | null = null
+
+      switch (icon) {
+        case "alert":
+          IconComponent = CircleAlertIcon
+          break
+        case "info":
+          IconComponent = InfoIcon
+          break
+        case "callout":
+          IconComponent = BellIcon
+          break
+        case "error":
+          IconComponent = CircleAlertIcon
+          break
+        case "warning":
+          IconComponent = ShieldAlertIcon
+          break
+        case "success":
+          IconComponent = CircleCheckIcon
+          break
+        default:
+          IconComponent = null
+      }
+
       return (
-        <Alert variant={variant} className="my-4">
-          {title && <AlertTitle>{title}</AlertTitle>}
-          <AlertDescription>{children}</AlertDescription>
+        <Alert appearance={appearance} variant={variant} className="my-4">
+          {IconComponent && (
+            <AlertIcon>
+              <IconComponent />
+            </AlertIcon>
+          )}
+          <AlertContent>
+            {title && <AlertTitle>{title}</AlertTitle>}
+            <AlertDescription>{children}</AlertDescription>
+          </AlertContent>
         </Alert>
       )
     },
-    Table: Table,
-    TableBody: TableBody,
-    TableCell: TableCell,
-    TableHead: TableHead,
-    TableHeader: TableHeader,
-    TableRow: TableRow,
+    Success: ({ title, children }: { title?: string; children: ReactNode }) => {
+      return (
+        <Alert appearance={"light"} variant={"success"} className="my-4">
+          <AlertIcon>
+            <CircleCheckIcon />
+          </AlertIcon>
+
+          <AlertContent>
+            {title && <AlertTitle>{title}</AlertTitle>}
+            <AlertDescription>{children}</AlertDescription>
+          </AlertContent>
+        </Alert>
+      )
+    },
+    Info: ({ title, children }: { title?: string; children: ReactNode }) => {
+      return (
+        <Alert appearance={"light"} variant={"primary"} className="my-4">
+          <AlertIcon>
+            <InfoIcon />
+          </AlertIcon>
+
+          <AlertContent>
+            {title && <AlertTitle>{title}</AlertTitle>}
+            <AlertDescription>{children}</AlertDescription>
+          </AlertContent>
+        </Alert>
+      )
+    },
+    Warning: ({ title, children }: { title?: string; children: ReactNode }) => {
+      return (
+        <Alert appearance={"light"} variant={"warning"} className="my-4">
+          <AlertIcon>
+            <ShieldAlertIcon />
+          </AlertIcon>
+
+          <AlertContent>
+            {title && <AlertTitle>{title}</AlertTitle>}
+            <AlertDescription>{children}</AlertDescription>
+          </AlertContent>
+        </Alert>
+      )
+    },
+    Error: ({ title, children }: { title?: string; children: ReactNode }) => {
+      return (
+        <Alert appearance={"light"} variant={"destructive"} className="my-4">
+          <AlertIcon>
+            <CircleAlertIcon />
+          </AlertIcon>
+
+          <AlertContent>
+            {title && <AlertTitle>{title}</AlertTitle>}
+            <AlertDescription>{children}</AlertDescription>
+          </AlertContent>
+        </Alert>
+      )
+    },
+    Callout: ({ title, children }: { title?: string; children: ReactNode }) => {
+      return (
+        <Alert appearance={"light"} variant={"info"} className="my-4">
+          <AlertIcon>
+            <BellIcon />
+          </AlertIcon>
+
+          <AlertContent>
+            {title && <AlertTitle>{title}</AlertTitle>}
+            <AlertDescription>{children}</AlertDescription>
+          </AlertContent>
+        </Alert>
+      )
+    },
+    APIReference,
   } satisfies MDXComponents
 }

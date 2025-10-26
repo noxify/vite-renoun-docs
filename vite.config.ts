@@ -39,6 +39,7 @@ export default defineConfig(({ command }) => ({
       ),
     },
   },
+
   plugins: [
     // auto generate route types for pages
     RouteTypesPlugin(),

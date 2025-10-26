@@ -3,10 +3,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client"
 
+import { useClientOnly } from "@/components/client-only"
 // @ts-expect-error no type definitions
 import rr, * as rrClass from "railroad-diagrams"
-
-import { useClientOnly } from "./client-only"
 
 export default function RailroadWrapper({
   content,

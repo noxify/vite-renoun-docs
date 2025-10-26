@@ -6,8 +6,8 @@ export function Preview({ children }: { children: ReactNode }) {
   return (
     <section>
       <div>
-        <div className="dot-background rounded-md rounded-b-none border border-b-0 p-8 dark:border-gray-700">
-          <div className="border bg-background p-4">{children}</div>
+        <div className="rounded-md rounded-b-none border border-b-0 p-8">
+          {children}
         </div>
         <CodeBlock
           className={{ container: "mx-px! rounded-t-none!" }}

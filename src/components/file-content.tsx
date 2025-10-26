@@ -25,10 +25,10 @@ export async function FileContent({ source }: { source: EntryType }) {
 
   // current workaround to get the correct typing for headings
   const headings: Headings = await file.getExportValue("headings")
-  // alternative approach which we discussed at discord
-  const headings2 = await file
-    .getExport("headings")
-    .then((mod) => mod.getRuntimeValue())
+  // // alternative approach which we discussed at discord
+  // const headings2 = await file
+  //   .getExport("headings")
+  //   .then((mod) => mod.getRuntimeValue())
 
   const createdAt = await source.getFirstCommitDate()
   const lastUpdate = await source.getLastCommitDate()
@@ -79,21 +79,21 @@ export async function FileContent({ source }: { source: EntryType }) {
                     // default prose
                     "prose dark:prose-invert",
                     // remove backtick from inline code block
-                    "prose-code:before:hidden prose-code:after:hidden",
+                    // "prose-code:before:hidden prose-code:after:hidden",
                     // use full width
                     "max-w-auto w-full min-w-full",
                     "grow",
 
-                    "prose-table:my-0",
-                    "prose-th:pb-0",
+                    // "prose-table:my-0",
+                    // "prose-th:pb-0",
 
-                    "xl:prose-headings:scroll-mt-20",
-                    "prose-headings:scroll-mt-28",
+                    // "xl:prose-headings:scroll-mt-20",
+                    // "prose-headings:scroll-mt-28",
 
-                    "prose-blockquote:mt-6 prose-blockquote:border-l-2 prose-blockquote:pl-6 prose-blockquote:italic",
-                    "prose-p:leading-7 not-first:prose-p:mt-6",
+                    // "prose-blockquote:mt-6 prose-blockquote:border-l-2 prose-blockquote:pl-6 prose-blockquote:italic",
+                    // "prose-p:leading-7 not-first:prose-p:mt-6",
 
-                    "prose-ul:ml-6 prose-ul:list-disc [&>li]:prose-ul:mt-2 [&>ul]:prose-ul:my-2 [&>ul]:prose-ul:ml-0",
+                    // "prose-ul:ml-6 prose-ul:list-disc [&>li]:prose-ul:mt-2 [&>ul]:prose-ul:my-2 [&>ul]:prose-ul:ml-0",
                   )}
                 >
                   <Content />
