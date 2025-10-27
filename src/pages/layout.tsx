@@ -4,6 +4,8 @@ import { RootProvider } from "renoun/components"
 
 import "@/styles.css"
 
+import { TailwindIndicator } from "@/components/tailwind-indicator"
+
 export default function RootLayout({
   children,
 }: {
@@ -38,6 +40,7 @@ export default function RootLayout({
           <ThemeProvider attribute={["class", "data-theme"]}>
             {children}
           </ThemeProvider>
+          <TailwindIndicator />
         </body>
       </html>
     </RootProvider>

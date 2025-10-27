@@ -1,7 +1,5 @@
 "use client"
 
-import { resolveHref } from "next/dist/client/resolve-href"
-import Router from "next/router"
 import multimatch from "multimatch"
 
 import type { TreeItem } from "./navigation"

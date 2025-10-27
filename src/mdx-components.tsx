@@ -422,8 +422,8 @@ export function useMDXComponents() {
     }) => {
       return <RailroadWrapper content={content} wrapped={wrapped} />
     },
-    Mermaid: ({ content, wrapped }: { content: string; wrapped?: boolean }) => {
-      return <MermaidWrapper chart={content} wrapped={wrapped} />
+    Mermaid: ({ chart, wrapped }: { chart: string; wrapped?: boolean }) => {
+      return <MermaidWrapper chart={chart} wrapped={wrapped} />
     },
     Video: ({ src }: { src: string }) => {
       return <Video src={src} />

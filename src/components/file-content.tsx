@@ -4,13 +4,10 @@ import { getBreadcrumbItems, getFileContent, getSections } from "@/collections"
 import { SiteBreadcrumb } from "@/components/breadcrumb"
 import SectionGrid from "@/components/section-grid"
 import Siblings from "@/components/siblings"
-import {
-  MobileTableOfContents,
-  TableOfContents,
-} from "@/components/table-of-contents"
+import { MobileTableOfContents } from "@/components/table-of-contents"
 import { cn } from "@/lib/utils"
-import { format } from "date-fns/format"
-import { ExternalLinkIcon } from "lucide-react"
+import { TableOfContents as RenounTableOfContents } from "renoun"
+import { TableOfContentsScript } from "renoun/components/TableOfContents/TableOfContents"
 
 export async function FileContent({ source }: { source: EntryType }) {
   // maybe this is obsolete, since we called them earlier in the `DocsPage` component
@@ -30,8 +27,8 @@ export async function FileContent({ source }: { source: EntryType }) {
   //   .getExport("headings")
   //   .then((mod) => mod.getRuntimeValue())
 
-  const createdAt = await source.getFirstCommitDate()
-  const lastUpdate = await source.getLastCommitDate()
+  // const createdAt = await source.getFirstCommitDate()
+  // const lastUpdate = await source.getLastCommitDate()
   const breadcrumbItems = await getBreadcrumbItems(file.getPathnameSegments())
 
   const sections = await getSections(source)
@@ -57,8 +54,8 @@ export async function FileContent({ source }: { source: EntryType }) {
         >
           <div
             className={cn("mx-auto", {
-              "w-full 2xl:w-6xl": !metadata.toc,
-              "w-full 2xl:w-4xl": metadata.toc,
+              "w-full 2xl:w-4xl": !metadata.toc,
+              "w-full 2xl:w-2xl": metadata.toc,
             })}
           >
             <SiteBreadcrumb items={breadcrumbItems} />
@@ -104,50 +101,56 @@ export async function FileContent({ source }: { source: EntryType }) {
             </div>
             <Siblings source={source} />
           </div>
-          {metadata.toc ? (
-            <div className="hidden w-78 xl:sticky xl:top-19 xl:-mr-6 xl:block xl:h-[calc(100vh-4.75rem)] xl:flex-none xl:overflow-y-auto xl:pr-6 xl:pb-16">
-              <TableOfContents toc={headings} />
 
-              <div
-                className={cn("my-6 grid gap-y-4", {
-                  "border-t pt-6": headings.length > 0,
-                })}
-              >
-                {createdAt && (
-                  <div className="text-sm text-muted-foreground">
-                    Created at: {format(createdAt, "dd.MM.yyyy")}
-                  </div>
-                )}
-                {lastUpdate && (
-                  <div className="text-sm text-muted-foreground">
-                    Last updated: {format(lastUpdate, "dd.MM.yyyy")}
-                  </div>
-                )}
-                <div className="justify-center text-sm text-muted-foreground">
-                  {process.env.NODE_ENV === "development" ? (
-                    <a
-                      href={source.getEditorUri()}
-                      className="hover:text-white"
+          {metadata.toc ? (
+            <div className="hidden w-78 xl:sticky xl:top-20 xl:-mr-6 xl:block xl:h-[calc(100vh-4.75rem)] xl:flex-none xl:overflow-y-auto xl:pr-6 xl:pb-16">
+              <RenounTableOfContents
+                headings={headings}
+                components={{
+                  Title: (props) => (
+                    <h4
+                      className="mt-0 mb-4 text-xs font-medium uppercase"
+                      {...props}
                     >
-                      View source{" "}
-                      <ExternalLinkIcon className="inline h-4 w-4" />
-                    </a>
-                  ) : (
-                    <a
-                      href={source.getSourceUrl()}
-                      target="_blank"
-                      className="hover:text-white"
-                    >
-                      View source{" "}
-                      <ExternalLinkIcon className="inline h-4 w-4" />
-                    </a>
-                  )}
-                </div>
-              </div>
+                      On this page
+                    </h4>
+                  ),
+                  List: ({ depth, children }) => {
+                    return (
+                      <ol
+                        aria-level={depth}
+                        className={cn("mt-1", {
+                          "pl-0": depth === 0,
+                          "pl-4": depth >= 1,
+                        })}
+                      >
+                        {children}
+                      </ol>
+                    )
+                  },
+                  Item: (props) => {
+                    return (
+                      <li
+                        className="mb-1 text-sm leading-6 last:mb-0"
+                        {...props}
+                      />
+                    )
+                  },
+                  Link: (props) => {
+                    return (
+                      <a
+                        {...props}
+                        className="aria-current:font-bold aria-current:text-primary"
+                      />
+                    )
+                  },
+                }}
+              />
             </div>
           ) : null}
         </div>
       </div>
+      <TableOfContentsScript />
     </>
   )
 }

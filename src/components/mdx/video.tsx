@@ -1,6 +1,6 @@
 "use client"
 
-import { ClientOnly } from "./client-only"
+import { ClientOnly } from "../client-only"
 
 export default function Video({ src }: { src: string }) {
   return (
