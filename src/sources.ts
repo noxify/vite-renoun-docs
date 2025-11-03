@@ -1,5 +1,6 @@
 import { Directory, withSchema } from "renoun/file-system"
 
+import type { DocSchema } from "./validations"
 import { metadataSchema } from "./validations"
 
 type ElementType<T extends readonly unknown[]> =
@@ -25,17 +26,29 @@ export function generateDirectories() {
         !entry.getBaseName().startsWith("_") &&
         !entry.getBaseName().startsWith(".") &&
         !entry.getAbsolutePath().includes("_assets"),
-      loader: {
-        mdx: withSchema({ metadata: metadataSchema }, (filePath) => {
-          const modules = import.meta.glob(`../content/**/*.mdx`, {
-            eager: true,
-          })
+      loader: () => {
+        const modules = import.meta.glob<DocSchema>(`../content/**/*.mdx`)
 
-          const modulesPath = `../content/${directory}/${filePath}.mdx`
+        return {
+          mdx: withSchema<DocSchema>(async (filePath) => {
+            const modulesPath = `../content/${directory}/${filePath}.mdx`
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
-          return modules[modulesPath] as any
-        }),
+            const pageContent = await modules[modulesPath]()
+
+            const metadata = await metadataSchema.safeParseAsync(
+              pageContent.metadata,
+            )
+
+            if (!metadata.success) {
+              console.error(
+                `Metadata validation failed for file: ${filePath} in directory: ${directory}`,
+              )
+              throw metadata.error
+            }
+
+            return { ...pageContent, metadata: metadata.data }
+          }),
+        }
       },
     })
   })

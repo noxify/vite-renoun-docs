@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react"
-import type { Headings } from "renoun"
+import { isValidElement } from "react"
 import z from "zod"
 
 export const metadataSchema = z.object({
@@ -13,7 +13,23 @@ export const metadataSchema = z.object({
   externalLink: z.url().optional(),
 })
 
+export const headingsSchema = z.array(
+  z.object({
+    id: z.string(),
+    level: z.number(),
+    children: z.custom<React.ReactElement>(isValidElement),
+    text: z.string(),
+  }),
+)
+
+export const docSchema = z.object({
+  metadata: metadataSchema,
+  headings: headingsSchema,
+  icon: z.custom<React.ReactElement>(isValidElement).optional(),
+})
+
 export type Metadata = z.infer<typeof metadataSchema>
+export type Headings = z.infer<typeof headingsSchema>
 
 export interface DocSchema {
   metadata: Metadata
